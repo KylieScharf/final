@@ -1,1 +1,46 @@
-#comment
+---
+title: "STAT 331/531: Final Project"
+author: "Kylie Scharf, Emma Durler, Jordan, Mason"
+format: 
+  html:
+    embed-resources: true
+    code-tools: true
+    toc: true
+    number-sections: true
+    code-fold: true
+editor: source
+execute: 
+  error: true
+  echo: true
+  message: false
+  warning: false
+---
+
+```{r}
+#| label: setup
+#| output: false
+library(tidyverse)
+babies <- read_csv(here::here("children_per_woman_total_fertility.csv"))
+life <- read_csv(here::here("lex.csv"))
+
+```
+
+```{r}
+
+#data cleaning
+babies <- babies |>
+  select(country, `1900`:`2000`) |>
+  pivot_longer(`1900`:`2000`,
+               names_to = "Year",
+               values_to = "Babies_Per_Woman")
+
+life <- life |>
+  select(country, `1900`:`2000`) |>
+  pivot_longer(`1900`:`2000`,
+               names_to = "Year",
+               values_to = "Life_Expectancy")
+
+full <- inner_join(babies, life)
+  
+```
+
