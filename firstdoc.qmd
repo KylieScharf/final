@@ -44,3 +44,7 @@ full <- inner_join(babies, life)
   
 ```
 
+# Description of the data
+
+We wanted to investigate the potential relationship between babies per woman and life expectancy in different countries throughout the world over time. We pivoted and joined our datasets to include only 4 necessary variables: Country, Year, Babies_Per_Woman, and Life_Expectancy.
+
