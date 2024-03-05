@@ -66,5 +66,5 @@ full |>
 
 # Description of the data
 
-We wanted to investigate the potential relationship between babies per woman and life expectancy in different countries throughout the world over time. We pivoted and joined our datasets to include only 5 necessary variables: Country, Year, Babies_Per_Woman, and Life_Expectancy, and Decade.
+We wanted to investigate the potential relationship between babies per woman and life expectancy in different countries throughout the world over time. We got our data from the Gap Minder website and pivoted and joined our data sets (children_per_woman_total_fertility.csv and lex.csv) to include only 5 necessary variables: Country, Year, Babies_Per_Woman, and Life_Expectancy, and Decade.
 
