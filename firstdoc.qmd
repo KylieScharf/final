@@ -34,7 +34,7 @@ life <- read_csv(here::here("lex.csv"))
 
 ## Data Cleaning Process
 
-To clean the data, we decided to first subset the two original large data sets imported to only contain observations from the years 1900 to 2000. We then decided to use an inner join to join our data because we only wanted to include observations with an observed value within both data sets. We obtained our data from the Gap Minder website and pivoted and joined our data sets (children_per_woman_total_fertility.csv and lex.csv) to include only 5 necessary variables: Country, Year, Babies_Per_Woman, Life_Expectancy, and Decade.
+To clean the data, we decided to first subset the two original large data sets imported to only contain observations from the years 1900 to 2000. We also decided to create a new variable called decade so that we may average over this in the future to reduce the amount of output. We then decided to use an inner join to join our data because we only wanted to include observations with an observed value within both data sets. We obtained our data from the Gap Minder website and pivoted and joined our data sets (children_per_woman_total_fertility.csv and lex.csv) to include only 5 necessary variables: Country, Year, Babies_Per_Woman, Life_Expectancy, and Decade.
 
 Below is the code used to clean and join the data sets. 
 
