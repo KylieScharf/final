@@ -18,9 +18,10 @@ execute:
 
 # Description of the data
 
-We wanted to investigate the potential relationship between babies per woman and life expectancy in different countries throughout the world over time. We got our data from the Gap Minder website and pivoted and joined our data sets (children_per_woman_total_fertility.csv and lex.csv) to include only 5 necessary variables: Country, Year, Babies_Per_Woman, and Life_Expectancy, and Decade. Each observational unit (row in the dataset) is each country in one specific year. The variables are average number of babies per woman per country per year and the average life expectancy per country per year.
+We wanted to investigate the potential relationship between babies per woman and life expectancy in different countries throughout the world over time. The explanatory variable we are interested in is the average amount of babies per women per year and country which we hope to explain the response variable that is the life expectancy per year and country. Each observational unit (row in the data set) is one specific country in one specific year. We selected these specific variables because we would all like to start families and want to see the impact of the increasing amount of children on life expectancy in the world. 
 
-# Importing the Data
+Below is the code used to import the data and load the necesarry packages. 
+
 
 ```{r}
 #| label: setup
@@ -30,6 +31,11 @@ babies <- read_csv(here::here("children_per_woman_total_fertility.csv"))
 life <- read_csv(here::here("lex.csv"))
 
 ```
+
+
+To clean the data, we decided to first subset the two original large datatsets imported to only contain observations from the years 1900 to 2000. We then decided to use an inner join to join our data because we only wanted to include observations with an observed value within both data sets. We obtained our data from the Gap Minder website and pivoted and joined our data sets (children_per_woman_total_fertility.csv and lex.csv) to include only 5 necessary variables: Country, Year, Babies_Per_Woman, Life_Expectancy, and Decade.
+
+Below is the code used to clean and join the data sets. 
 
 ```{r}
 #| output: false
@@ -46,16 +52,7 @@ life <- life |>
                names_to = "Year",
                values_to = "Life_Expectancy")
 
-full <- inner_join(babies, life)
-
-```
-
-
-```{r}
-#| output: false
-#Linear Regression
-
-full |>
+full <- inner_join(babies, life) |>
   mutate(decade = case_when(Year %in% c(1900:1910) ~ "00s",
                             Year %in% c(1910:1920) ~ "10s",
                             Year %in% c(1920:1930) ~ "20s",
@@ -67,8 +64,13 @@ full |>
                             Year %in% c(1980:1990) ~ "80s",
                             Year %in% c(1990:2000) ~ "90s"
                             )
-         ) 
+         )
+
 ```
+
+We hypothesized a negative relationship between average babies per year per country and average life expectancy per year per country. That is, we expect average life expectancy to decrease as the average amount of babies per women increase. We believe this because as the average babies per women increases, the population increases which creates more competition for limited resources. This is likely to lead to earlier deaths and an increased number of deaths due to factors other than just natural causes. 
+
+
 
 
 
