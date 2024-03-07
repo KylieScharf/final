@@ -85,7 +85,7 @@ full |>
 
 ```
 
-As we can see in the graph above, there does appear to be a negative relationship between the two variables. Our hypothesis seems correct at the moment. 
+As we can see in the graph above, there does appear to be a moderately strong and linear negative relationship between the two variables. Our hypothesis seems correct at the moment. There do not appear to be any points that do not fit the overall pattern. 
 
 We next wanted to analyze how the relationship between the variables changed over time. To do this, we used our decade variable that we created and grouped by not only country, but also decade. We then averaged both babies per women and life expectancy over both country country and decade to obtain the graph below. 
   
