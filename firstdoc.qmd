@@ -117,7 +117,27 @@ model_data <- full |>
 my_model <- lm(avg_life_exp ~ avg_babies, data = model_data)
 
 my_model
+
 ```
 
-The Coefficients presented in the model are an intercept of 73.199 and a slope of -4.469, further supporting our hypothesized negative relationship. The intercept obtained represents that we estimate an average life expectancy of around 73 years when on average women have 0 babies. The slope represents that every increase of 1 baby in average babies per women, we estimate an average decrease of around 4.5 years in average life expectancy. The method we used is "lm" to fit a straight regression line to our data. This is appropriate because our graph shows roughly linear data so a linear model is appropriate. Written out, our model is (avg_life_exp)^ = 73.199 - 4.496(avg_babies).
+The Coefficients presented in the model are an intercept of 73.199 and a slope of -4.469, further supporting our hypothesized negative relationship. The intercept obtained represents that we estimate an average life expectancy of around 73 years when on average women have 0 babies. The slope represents that every increase of 1 baby in average babies per women, we estimate an average decrease of around 4.5 years in average life expectancy. Written out, our model is (avg_life_exp)^ = 73.199 - 4.496(avg_babies).
+
+```{r}
+#assumptions
+library(broom)
+
+tib <- augment(my_model)
+
+#hist of resids
+ggplot(data = tib, aes(x = .resid))+
+  geom_histogram()
+
+#resid vs predicted
+
+ggplot(data = tib, aes(x = .fitted, y = .resid)) +
+  geom_point()
+```
+
+The method we used is "lm" to fit a linear regression line to our data. This is appropriate, firstly, because our data appears to follow a linear pattern pretty well. We can also assume our data are independent as knowing one person's life expectancy should not predict another person's. When plotting a histogram of the residuals obtained, we can also see that they are roughly normally distributed with a slight right skew. In a plot of residuals vs. predicted values, we can also see that we have roughly equal variability for each predicted value.
+
 
