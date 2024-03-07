@@ -16,11 +16,14 @@ execute:
   warning: false
 ---
 
-## Description of the data
+## Introduction
 
-We wanted to investigate the potential relationship between babies per woman and life expectancy in different countries throughout the world over time. The explanatory variable we are interested in is the average amount of babies per women per year and country which we hope to explain the response variable that is the life expectancy per year and country. Each observational unit (row in the data set) is one specific country in one specific year. We selected these specific variables because we would all like to start families and want to see the impact of the increasing amount of children on life expectancy in the world. 
+Our research is aimed at investigating the potential relationship between fertility rates, measured by the average number of babies per woman, and life expectancy across various countries worldwide over time. The explanatory variable of interest is the average number of babies per women per year and country which we hope to explain the response variable that is the life expectancy per year and country. 
 
-Below is the code used to import the data and load the necessary packages. 
+In search of an answer to our question, we decided to use data sourced from Gap minder to investigate a possible relationship. We used two data sets, one containing information of the average amount of babies per woman per country and year, and one containing life expectancy per country per year. The two data sets we obtained are children_per_woman_total_fertility.csv and lex.csv. To clean the data, we decided to first subset the two original large data sets imported to only contain observations from the years 1900 to 2000. We also decided to create a new variable called decade so that we may average over this in the future to reduce the amount of output. We then decided to use an inner join to join our data because we only wanted to include observations with an observed value within both data sets. Each observational unit (row in the data set) in our joined data represented one specific country in one specific year and contains the average values of both variables. 
+
+We hypothesized a negative relationship between average babies per year per country and average life expectancy per year per country. That is, we expect average life expectancy to decrease as the average amount of babies per woman increase. We believe this because as the average babies per woman increases, the population increases which creates more competition for limited resources. This is likely to lead to earlier deaths, and an increased number of deaths due to factors other than just natural causes. Our motivation for selecting this topic stems from a blend of personal and societal interests. Firstly, as individuals contemplating starting families, we're naturally curious about the potential impacts of fertility rates on broader societal metrics like life expectancy. Understanding these dynamics can inform our personal decisions and contribute to our collective understanding of family planning.
+
 
 
 ```{r}
@@ -32,11 +35,7 @@ life <- read_csv(here::here("lex.csv"))
 
 ```
 
-## Data Cleaning Process
 
-To clean the data, we decided to first subset the two original large data sets imported to only contain observations from the years 1900 to 2000. We also decided to create a new variable called decade so that we may average over this in the future to reduce the amount of output. We then decided to use an inner join to join our data because we only wanted to include observations with an observed value within both data sets. We obtained our data from the Gap Minder website and pivoted and joined our data sets (children_per_woman_total_fertility.csv and lex.csv) to include only 5 necessary variables: Country, Year, Babies_Per_Woman, Life_Expectancy, and Decade.
-
-Below is the code used to clean and join the data sets. 
 
 ```{r}
 #| output: false
@@ -69,11 +68,56 @@ full <- inner_join(babies, life) |>
 
 ```
 
-## Hypothesized Relationship
+## Linear Regression
 
-We hypothesized a negative relationship between average babies per year per country and average life expectancy per year per country. That is, we expect average life expectancy to decrease as the average amount of babies per woman increase. We believe this because as the average babies per woman increases, the population increases which creates more competition for limited resources. This is likely to lead to earlier deaths, and an increased number of deaths due to factors other than just natural causes. 
-
-
+To investigate our hypothesis, we first graphed the data in our combined data set. We averaged the data for each country over all years that were in the data set so that each country is only represented once in the plot. Each data point in the plot below represents one country where the average babies per women in that country is plotted on the x-axis and the average life expectancy in that country is plotted on the y-axis. 
 
 
+```{r}
+#second plot
+full |>
+  group_by(country) |>
+  summarize(avg_life_exp = mean(Life_Expectancy), avg_babies = mean(Babies_Per_Woman)) |>
+  ggplot(aes(x = avg_babies, y = avg_life_exp)) +
+  geom_jitter() +
+  geom_smooth(method = "lm") + 
+  labs(x = "Average Babies Per Woman Per Country", subtitle = "Average Life Expectancy Per Country", y = "", title = "Average Babies Per Women Vs. Average Life Expectancy")
+
+```
+
+As we can see in the graph above, there does appear to be a negative relationship between the two variables. Our hypothesis seems correct at the moment. 
+
+We next wanted to analyze how the relationship between the variables changed over time. To do this, we used our decade variable that we created and grouped by not only country, but also decade. We then averaged both babies per women and life expectancy over both country country and decade to obtain the graph below. 
+  
+```{r}
+#first plot
+
+full |>
+  group_by(country, decade) |>
+  summarize(avg_life_exp = mean(Life_Expectancy), 
+            avg_babies = mean(Babies_Per_Woman)) |>
+  ggplot(aes(x = avg_babies, y = avg_life_exp)) +
+  geom_jitter() +
+  geom_smooth(method = "lm") + 
+  facet_wrap(.~decade) +
+  labs(x = "Average Babies Per Woman Per Country", subtitle = "Average Life Expectancy Per Country", y = "", title = "Average Babies Per Women Vs. Average Life Expectancy Across Decades")
+```
+
+As seen in this plot, it does not seem like the relationship between the variables is changing much over time. It does appear, however, that the average life expectancy is increasing over time which is causing our graph to shift upwards as decades increase. 
+
+
+We then wanted to test our hypothesized relationship by fitting a model to the data. We fit a linear model to the relationship between our two variables to estimate a possible relationship. 
+
+```{r}
+
+model_data <- full |>
+  group_by(country) |>
+  summarize(avg_life_exp = mean(Life_Expectancy), avg_babies = mean(Babies_Per_Woman))
+  
+my_model <- lm(avg_life_exp ~ avg_babies, data = model_data)
+
+my_model
+```
+
+The Coefficients presented in the model are an intercept of 73.199 and a slope of -4.469, further supporting our hypothesized negative relationship. The intercept obtained represents that we estimate an average life expectancy of around 73 years when on average women have 0 babies. The slope represents that every increase of 1 baby in average babies per women, we estimate an average decrease of around 4.5 years in average life expectancy. The method we used is "lm" to fit a straight regression line to our data. This is appropriate because our graph shows roughly linear data so a linear model is appropriate. Written out, our model is (avg_life_exp)^ = 73.199 - 4.496(avg_babies).
 
