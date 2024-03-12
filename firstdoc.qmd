@@ -192,3 +192,42 @@ grid.arrange(ggplot(sim_data, aes(y = sim_avg_life_exp, x = avg_babies)) +
 
 As seen in the plot above, the simulated data appears to be relatively similar to the observed data. They seem to both have similiar ranges and have very similar linear trends. The observed data appears to be more spread out than the simulated but not by much. This shows that a linear model appears to be a very good fit but not perfect. 
 
+To further assess our linear model choice, we created many many simulated average life expectancy data sets like the one above and regressed them on our observed average life expectancy data. This allowed us to assess the amount of variation in the observed data that is explained by the simulated data to determine if a linear model is actually appropriate. 
+
+
+```{r}
+#iterating
+sims <- map_dfc(.x = 1:1000, .f = ~tibble(sim = noise(predicted, 
+                                          sd = sig)))
+colnames(sims) <- colnames(sims) |> 
+  str_replace(pattern = "\\.\\.\\.",
+                  replace = "_")
+
+sims <- model_data |>
+  filter(!is.na(avg_life_exp), 
+         !is.na(avg_babies)) |> 
+  select(avg_life_exp) |>
+  bind_cols(sims)
+
+head(sims)
+
+sim_r_sq <- sims |>
+  map(~ lm(avg_life_exp ~ .x, data = sims)) |>
+  map(glance)|> 
+  map_dbl(~ .x$r.squared)
+
+sim_r_sq <- sim_r_sq[names(sim_r_sq) != "avg_life_exp"]
+
+tibble(sims = sim_r_sq) |> 
+  ggplot(aes(x = sims)) + 
+  geom_histogram(binwidth = 0.025) +
+  labs(x = expression("Simulated"~ R^2),
+       y = "",
+       subtitle = "Number of Simulated Models")
+  
+
+
+
+```
+
+From this plot, we can see that our simulated data have r-squared values of a little over .5 on average. This shows that the simulated average life expectancy data are moderately similiar to the observed average life expectancy data. The simulated average life expectancy data accounts for around 50% of the variability in the observed average life expectancy data on average. This is a somewhat high number so we can be moderately confident that our data can be represented with a linear model. 
