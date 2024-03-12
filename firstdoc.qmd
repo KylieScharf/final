@@ -144,10 +144,8 @@ The method we used is "lm" to fit a linear regression line to our data. This is 
 ```{r}
 library(broom)
 
-lm(avg_life_exp ~ avg_babies, data = tib) |>
-  glance() |>
-  select(r.squared) |>
-  summarize(variance_response = sigma(my_model), variance_fitted = r.squared, variance_residuals = 1-r.squared)
+tib |>
+  summarize(variance_residual = var(.resid), variance_fitted = var(.fitted), variance_response = var(avg_life_exp))
 ```
 
 
