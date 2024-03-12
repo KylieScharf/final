@@ -144,9 +144,10 @@ The method we used is "lm" to fit a linear regression line to our data. This is 
 ```{r}
 library(broom)
 
-tib |>
+tib2 <- tib|>
   summarize(variance_residual = var(.resid), variance_fitted = var(.fitted), variance_response = var(avg_life_exp))
+
+
 ```
 
-
-
+The variability in average life expectancy that is accounted for by the relationship with the average amount of babies born per woman can be calculated from the table above. This can be seen when dividing the total variance `r tib2$variance_response ` and the variance in the fitted values `r tib2$variance_fitted` to obtain a percentage of roughly `r round((tib2$variance_fitted/tib2$variance_response) * 100)`. This suggests the quality of our model is high because about `r round((tib2$variance_fitted/tib2$variance_response) * 100)`% of the variablity in the response was accounted for by our regression model. 
