@@ -18,7 +18,7 @@ execute:
 
 ## Introduction
 
-Our research is aimed at investigating the potential relationship between fertility rates, measured by the average number of babies per woman, and life expectancy across various countries worldwide over time. The explanatory variable of interest is the average number of babies per women per year and country measured in number of babies which we hope to explain the response variable that is the life expectancy per year and country measured in years. 
+Our research is aimed at investigating the potential relationship between fertility rates, measured by the average number of babies per woman, and life expectancy measured in yearsacross various countries worldwide over time. The explanatory variable of interest is the average number of babies per women per year and country measured in number of babies which we hope to explain the response variable that is the life expectancy per year and country measured in years. 
 
 In search of an answer to our question, we decided to use data sourced from Gap minder to investigate a possible relationship. We used two data sets, one containing information of the average amount of babies per woman per country and year, and one containing life expectancy per country per year. The two data sets we obtained are children_per_woman_total_fertility.csv and lex.csv. To clean the data, we decided to first subset the two original large data sets imported to only contain observations from the years 1900 to 2000. We also decided to create a new variable called decade so that we may average over this in the future to reduce the amount of output. We then decided to use an inner join to join our data because we only wanted to include observations with an observed value within both data sets. Each observational unit (row in the data set) in our joined data represented one specific country in one specific year and contains the average values of both variables. There are 186 countries in our final data set. 
 
@@ -64,7 +64,7 @@ full <- inner_join(babies, life) |>
                             Year %in% c(1980:1990) ~ "80s",
                             Year %in% c(1990:2000) ~ "90s"
                             )
-         )
+         ) 
 
 ```
 
