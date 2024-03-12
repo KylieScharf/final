@@ -140,6 +140,8 @@ ggplot(data = tib, aes(x = .fitted, y = .resid)) +
 
 The method we used is "lm" to fit a linear regression line to our data. This is appropriate, firstly, because our data appears to follow a linear pattern. We can also assume our data are independent as knowing one person's life expectancy should not predict another person's. When plotting a histogram of the residuals obtained, we can also see that they are roughly normally distributed with a slight right skew. In a plot of residuals vs. predicted values, we can also see that we have roughly equal variability for each predicted value.
 
+We then wanted to assess the different sourced of variability in our model. Below is a table including such sources. 
+
 ## Model Fit
 ```{r}
 library(broom)
@@ -147,7 +149,46 @@ library(broom)
 tib2 <- tib|>
   summarize(variance_residual = var(.resid), variance_fitted = var(.fitted), variance_response = var(avg_life_exp))
 
-
+tib2
 ```
 
 The variability in average life expectancy that is accounted for by the relationship with the average amount of babies born per woman can be calculated from the table above. This can be seen when dividing the total variance `r tib2$variance_response ` and the variance in the fitted values `r tib2$variance_fitted` to obtain a percentage of roughly `r round((tib2$variance_fitted/tib2$variance_response) * 100)`. This suggests the quality of our model is high because about `r round((tib2$variance_fitted/tib2$variance_response) * 100)`% of the variablity in the response was accounted for by our regression model. 
+
+
+
+In order to further assess whether a linear model is appropriate or not, we created a new simulated data set that we would expect to see if our data was linear. The plots of both the simulated and observed data are shown below. 
+
+```{r}
+
+library(gridExtra)
+predicted <- predict(my_model)
+sig <- sigma(my_model)
+
+noise <- function(x, mean = 0, sd){
+  x + rnorm(length(x), 
+            mean, 
+            sd)
+}
+
+sim_response <- tibble(sim_avg_life_exp = noise(predicted, sd = sig))
+
+sim_data <- model_data |>
+  filter(!is.na(avg_life_exp), 
+         !is.na(avg_babies)) |>
+  select(avg_life_exp, avg_babies)|>
+  bind_cols(sim_response)
+
+grid.arrange(ggplot(sim_data, aes(y = sim_avg_life_exp, x = avg_babies)) +
+  geom_point()+
+    labs(x = "Avg Babies Per Woman", subtitle = "Simulated Avg Life Expectancy", y = "") +
+    geom_smooth(method = "lm"), 
+  ggplot(sim_data, aes(y = avg_life_exp, x = avg_babies))+
+  geom_point()+
+    labs(x = "Avg Babies Per Woman", subtitle = "Observed Avg Life Expectancy", y = "") +
+    geom_smooth(method = "lm"),
+  ncol = 2
+)
+```
+
+As seen in the plot above, the simulated data appears to be relatively similar to the observed data. They seem to both have similiar ranges and have very similar linear trends. The observed data appears to be more spread out than the simulated but not by much. This shows that a linear model appears to be a very good fit but not perfect. 
+
