@@ -142,7 +142,6 @@ The method we used is "lm" to fit a linear regression line to our data. This is 
 
 We then wanted to assess the different sourced of variability in our model. Below is a table including such sources. 
 
-## Model Fit
 ```{r}
 library(broom)
 
@@ -154,7 +153,7 @@ tib2
 
 The variability in average life expectancy that is accounted for by the relationship with the average amount of babies born per woman can be calculated from the table above. This can be seen when dividing the total variance `r tib2$variance_response ` and the variance in the fitted values `r tib2$variance_fitted` to obtain a percentage of roughly `r round((tib2$variance_fitted/tib2$variance_response) * 100)`. This suggests the quality of our model is high because about `r round((tib2$variance_fitted/tib2$variance_response) * 100)`% of the variablity in the response was accounted for by our regression model. 
 
-
+## Simulation
 
 In order to further assess whether a linear model is appropriate or not, we created a new simulated data set that we would expect to see if our data was linear. The plots of both the simulated and observed data are shown below. 
 
@@ -230,4 +229,4 @@ tibble(sims = sim_r_sq) |>
 
 ```
 
-From this plot, we can see that our simulated data have r-squared values of a little over .5 on average. This shows that the simulated average life expectancy data are moderately similiar to the observed average life expectancy data. The simulated average life expectancy data accounts for around 50% of the variability in the observed average life expectancy data on average. This is a somewhat high number so we can be moderately confident that our data can be represented with a linear model. 
+From this plot, we can see that our simulated data have r-squared values of a little over 0.5 on average. This shows that the simulated average life expectancy data are moderately similiar to the observed average life expectancy data. The simulated average life expectancy data accounts for around 50% of the variability in the observed average life expectancy data on average. This is a somewhat high number so we can be moderately confident that our data can be represented with a linear model. 
