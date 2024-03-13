@@ -18,18 +18,19 @@ execute:
 
 ## Introduction
 
-Our research is aimed at investigating the potential relationship between fertility rates, measured by the average number of babies per woman, and life expectancy measured in yearsacross various countries worldwide over time. The explanatory variable of interest is the average number of babies per women per year and country measured in number of babies which we hope to explain the response variable that is the life expectancy per year and country measured in years. 
+Our research is aimed at investigating the potential relationship between fertility rates, measured by the average number of babies per woman, and average life expectancy measured in years across various countries worldwide. The explanatory variable of interest is the average number of babies per women per year and country measured in number of babies which we hope to explain the response variable that is the average life expectancy per year and country measured in years. 
 
-In search of an answer to our question, we decided to use data sourced from Gap minder to investigate a possible relationship. We used two data sets, one containing information of the average amount of babies per woman per country and year, and one containing life expectancy per country per year. The two data sets we obtained are children_per_woman_total_fertility.csv and lex.csv. To clean the data, we decided to first subset the two original large data sets imported to only contain observations from the years 1900 to 2000. We also decided to create a new variable called decade so that we may average over this in the future to reduce the amount of output. We then decided to use an inner join to join our data because we only wanted to include observations with an observed value within both data sets. Each observational unit (row in the data set) in our joined data represented one specific country in one specific year and contains the average values of both variables. There are 186 countries in our final data set. 
+In search of an answer to our question, we decided to use data sourced from Gap minder to investigate a possible relationship. We used two data sets, one containing information of the average amount of babies per woman per country and year, and one containing average life expectancy per country per year. (add how data was collected) To clean the data, we decided to first subset the two original large data sets imported to only contain observations from the years 1900 to 2000. We did this to limit the number of observations to be easier to work with and because we are only really interested in these years to base our conclusion on. We also decided to create a new variable called decade so that we may average over this in the future to reduce the amount of output. We then decided to use an inner join to join our data because we only wanted to include observations with an observed value within both data sets. Each observational unit (row in the data set) in our joined data represents one specific country in one specific year and contains the values of both variables. Along with a variable for country, our final cleaned data set also contains a variable for year, life expectancy, babies per woman, and decade. In total, our final data set contains 18,786 observations from 186 countries and from the years 1900 to 2000. (add citations)
 
-We hypothesized a negative relationship between average babies per year per country and average life expectancy per year per country. That is, we expect average life expectancy to decrease as the average amount of babies per woman increase. We believe this because as the average babies per woman increases, the population increases which creates more competition for limited resources. This is likely to lead to earlier deaths, and an increased number of deaths due to factors other than just natural causes. Our motivation for selecting this topic stems from a blend of personal and societal interests. Firstly, as individuals contemplating starting families, we're naturally curious about the potential impacts of fertility rates on broader societal metrics like life expectancy. Understanding these dynamics can inform our personal decisions and contribute to our collective understanding of family planning.
-
+We hypothesized a negative relationship between average babies per year per country and average life expectancy per year per country. That is, we expect average life expectancy to decrease as the average amount of babies per woman increase. We believe this because as the average babies per woman increases, the population increases which creates more competition for limited resources. This is likely to lead to earlier deaths, and an increased number of deaths due to factors other than just natural causes. Our motivation for selecting this topic stems from a blend of personal and societal interests. Firstly, as individuals contemplating starting families, we're naturally curious about the potential impacts of fertility rates on life expectancy. Understanding these dynamics can inform our personal decisions and contribute to our collective understanding of family planning.
 
 
 ```{r}
 #| label: setup
 #| output: false
 library(tidyverse)
+library(broom)
+library(gridExtra)
 babies <- read_csv(here::here("children_per_woman_total_fertility.csv"))
 life <- read_csv(here::here("lex.csv"))
 
@@ -70,11 +71,37 @@ full <- inner_join(babies, life) |>
 
 ## Linear Regression
 
-To investigate our hypothesis, we first graphed the data in our combined data set. We averaged the data for each country over all years that were in the data set so that each country is only represented once in the plot. Each data point in the plot below represents one country where the average babies per woman in that country is plotted on the x-axis and the average life expectancy in that country is plotted on the y-axis. 
+In order to test our hypothesized relationship, we needed to fit a model to our data. The method we decided on was a linear regression model. Before we could fit such a model, however, we needed to check that all assumptions of the model were met by our data. Below are graphs used to check some of the assumptions. 
+
+```{r}
+#assumption checking
+model_data <- full |>
+  group_by(country) |>
+  summarize(avg_life_exp = mean(Life_Expectancy), avg_babies = mean(Babies_Per_Woman))
+  
+my_model <- lm(avg_life_exp ~ avg_babies, data = model_data)
+
+tib <- augment(my_model)
+
+#hist of resids
+ggplot(data = tib, aes(x = .resid))+
+  geom_histogram() +
+  labs(x = "Residuals", y = "", subtitle = "Count", title = "Summary of Residuals")
+
+#resid vs predicted
+
+ggplot(data = tib, aes(x = .fitted, y = .resid)) +
+  geom_point() +
+  labs(x = "Predicted Values", y = "", subtitle = "Residuals", title = "Residuals Vs. Predicted Values")
+```
+
+A linear model is appropriate, firstly, because our data appears to follow a linear pattern. We can also assume our data are independent as knowing one person's life expectancy should not predict another person's. When plotting a histogram of the residuals obtained, we can also see that they are roughly normally distributed with a slight right skew. In a plot of residuals vs. predicted values, we can also see that we have roughly equal variability for each predicted value. There also does not appear to be any sort of pattern in the resiudals, further aiding our independent condition. Overall, from these graphs and previous knowledge about how our data was collected, we decided that a linear model is appropriate. 
+
+After checking that our data met all assumptions of a linear model, we first graphed the data in our combined data set to visualize the relationship between average life expectancy and average babies per woman. We averaged both average babies per woman and life expectancy for each country over all years in the data set. Each country is then only represented once in the plot. Each data point in the plot below represents one country where the average babies per woman in that country is plotted on the x-axis and the average life expectancy in that country is plotted on the y-axis. 
 
 
 ```{r}
-#second plot
+#plot of response vs. explanatory
 full |>
   group_by(country) |>
   summarize(avg_life_exp = mean(Life_Expectancy), avg_babies = mean(Babies_Per_Woman)) |>
@@ -85,13 +112,12 @@ full |>
 
 ```
 
-As we can see in the graph above, there does appear to be a moderately strong and linear negative relationship between the two variables. Our hypothesis seems correct at the moment. There do not appear to be any points that do not fit the overall pattern. 
+As we can see in the graph above and the linear regression line plotted in such, there does appear to be a moderately strong and linear negative relationship between the two variables. Our hypothesis seems correct at the moment. There do not appear to be any points that do not fit the overall pattern. 
 
-We next wanted to analyze how the relationship between the variables changed over time. To do this, we used our decade variable that we created and grouped by not only country, but also decade. We then averaged both babies per woman and life expectancy over both country country and decade to obtain the graph below. 
+We next wanted to analyze how the relationship between the variables changed over time. To do this, we used our decade variable that we created and grouped by not only country, but also decade. We then averaged both average babies per woman and average life expectancy over both country and decade to obtain the graph below. 
   
 ```{r}
-#first plot
-
+#plot over time
 full |>
   group_by(country, decade) |>
   summarize(avg_life_exp = mean(Life_Expectancy), 
@@ -103,63 +129,37 @@ full |>
   labs(x = "Average Babies Per Woman Per Country", subtitle = "Average Life Expectancy Per Country", y = "", title = "Average Babies Per Women Vs. Average Life Expectancy Across Decades")
 ```
 
-As seen in this plot, it does not seem like the relationship between the variables is changing much over time. It does appear, however, that the average life expectancy is increasing over time which is causing our graph to shift upwards as decades increase. 
+As seen in this plot, it does not appear that the relationship between the variables is changing much over time. That is, the linear regression line plotted in blue does not seem to be changing in slope much throughout the different graphs. It does appear, however, that the average life expectancy is increasing over time, causing the graphs to shift upwards as decades increase. 
 
-
-We then wanted to test our hypothesized relationship by fitting a model to the data. We fit a linear model to the relationship between our two variables to estimate a possible relationship. 
+We then wanted to test our hypothesized relationship by fitting a linear regression model to the data. Estimated coefficients of the fitted model, including slope and intercept, are shown in the table below. 
 
 ```{r}
-
-model_data <- full |>
-  group_by(country) |>
-  summarize(avg_life_exp = mean(Life_Expectancy), avg_babies = mean(Babies_Per_Woman))
-  
-my_model <- lm(avg_life_exp ~ avg_babies, data = model_data)
-
-my_model
+#fitting a model
+broom::tidy(my_model)
 
 ```
 
-The Coefficients presented in the model are an intercept of 73.199 and a slope of -4.469, further supporting our hypothesized negative relationship. The intercept obtained represents that we estimate an average life expectancy of around 73 years when on average, a woman has 0 babies. The slope represents that every increase of 1 baby in average babies per woman, we estimate an average decrease of around 4.5 years in average life expectancy. Written out, our model is (avg_life_exp)^ = 73.199 - 4.496(avg_babies).
+The model estimates an intercept of 73.199 years and a slope of -4.469 years, further supporting our hypothesized negative relationship between average babies per woman and average life expectancy. The estimated intercept represents that we estimate an average of average life expectancy of around 73 years in a country and year when, on average, a woman has 0 babies. The slope represents that for every increase of 1 baby in average babies per woman, we estimate an average decrease of around 4.5 years in average life expectancy. Our model can be written symbolically as (avg_life_exp)^ = 73.199 - 4.496(avg_babies) where (avg_life_exp)^ represents a prediction of the average life expectancy and (avg_babies) represents the average babies per woman in a particular year and country. 
+
+We next wanted to assess the different sources of variability in our linear regression model. Below is a table including estimates of some such sources. 
 
 ```{r}
-#assumptions
-library(broom)
-
-tib <- augment(my_model)
-
-#hist of resids
-ggplot(data = tib, aes(x = .resid))+
-  geom_histogram()
-
-#resid vs predicted
-
-ggplot(data = tib, aes(x = .fitted, y = .resid)) +
-  geom_point()
-```
-
-The method we used is "lm" to fit a linear regression line to our data. This is appropriate, firstly, because our data appears to follow a linear pattern. We can also assume our data are independent as knowing one person's life expectancy should not predict another person's. When plotting a histogram of the residuals obtained, we can also see that they are roughly normally distributed with a slight right skew. In a plot of residuals vs. predicted values, we can also see that we have roughly equal variability for each predicted value.
-
-We then wanted to assess the different sourced of variability in our model. Below is a table including such sources. 
-
-```{r}
-library(broom)
-
+#variance
 tib2 <- tib|>
   summarize(variance_residual = var(.resid), variance_fitted = var(.fitted), variance_response = var(avg_life_exp))
 
 tib2
 ```
 
-The variability in average life expectancy that is accounted for by the relationship with the average amount of babies born per woman can be calculated from the table above. This can be seen when dividing the total variance `r tib2$variance_response ` and the variance in the fitted values `r tib2$variance_fitted` to obtain a percentage of roughly `r round((tib2$variance_fitted/tib2$variance_response) * 100)`. This suggests the quality of our model is high because about `r round((tib2$variance_fitted/tib2$variance_response) * 100)`% of the variablity in the response was accounted for by our regression model. 
+The variability in average life expectancy that is accounted for by the relationship with the average amount of babies born per woman can be calculated from the table above. This can be seen when dividing the total variance of around 63 years and the variance in the fitted values of around 44 years to obtain a percentage of roughly 70%. This large percentage suggests the quality of our model is high because about 70% of the variability in average life expectancy was accounted for by our regression model using average babies per woman. 
 
 ## Simulation
 
-In order to further assess whether a linear model is appropriate or not, we created a new simulated data set that we would expect to see if our data was linear. The plots of both the simulated and observed data are shown below. 
+In order to further assess whether a linear model is appropriate or not, we created a new simulated data set containing simulated values for average life expectancy that we would expect to see if our data was in fact linear. The plots of both the simulated and observed average life expectancy are shown side-by-side below. 
+
 
 ```{r}
-
-library(gridExtra)
+#simulating
 predicted <- predict(my_model)
 sig <- sigma(my_model)
 
@@ -189,9 +189,9 @@ grid.arrange(ggplot(sim_data, aes(y = sim_avg_life_exp, x = avg_babies)) +
 )
 ```
 
-As seen in the plot above, the simulated data appears to be relatively similar to the observed data. They seem to both have similiar ranges and have very similar linear trends. The observed data appears to be more spread out than the simulated but not by much. This shows that a linear model appears to be a very good fit but not perfect. 
+As seen in the plot above, the simulated data appears to be relatively similar to the observed data. They seem to both have similar ranges and have very similar linear trends. The observed data appears to be more spread out than the simulated but not by much. This shows that a linear model appears to be a very good fit but not perfect. 
 
-To further assess our linear model choice, we created many many simulated average life expectancy data sets like the one above and regressed them on our observed average life expectancy data. This allowed us to assess the amount of variation in the observed data that is explained by the simulated data to determine if a linear model is actually appropriate. 
+To further assess our linear model choice, we created many many simulated average life expectancy data sets like the one above and regressed them on our observed average life expectancy data. This allowed us to assess the amount of variation in the observed average life expectancy data that is explained by the simulated average life expectancy data to determine if a linear model is actually appropriate. 
 
 
 ```{r}
@@ -208,7 +208,6 @@ sims <- model_data |>
   select(avg_life_exp) |>
   bind_cols(sims)
 
-head(sims)
 
 sim_r_sq <- sims |>
   map(~ lm(avg_life_exp ~ .x, data = sims)) |>
@@ -229,4 +228,7 @@ tibble(sims = sim_r_sq) |>
 
 ```
 
-From this plot, we can see that our simulated data have r-squared values of a little over 0.5 on average. This shows that the simulated average life expectancy data are moderately similiar to the observed average life expectancy data. The simulated average life expectancy data accounts for around 50% of the variability in the observed average life expectancy data on average. This is a somewhat high number so we can be moderately confident that our data can be represented with a linear model. 
+From this plot, we can see that our simulated data have r-squared values of a little over 0.5 on average. In other words, around 50% of the variability in observed average life expectancy can be explained by a linear relationship with the simulated average life expectancy data. We can then conclude that the simulated average life expectancy data are moderately similar to the observed average life expectancy data. The simulated average life expectancy data accounts for around 50% of the variability in the observed average life expectancy data on average. This is a somewhat high number so we can be moderately confident that our data can be represented with a linear model. 
+
+After making sure all conditions of a linear model were met, we were able to regress average life expectancy on average babies per woman to conclude that there is a negative linear relationship between the two variables between the years of 1900 and 2000. 
+
