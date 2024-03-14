@@ -196,6 +196,8 @@ To further assess our linear model choice, we created many many simulated averag
 
 ```{r}
 #iterating
+set.seed(314)
+
 sims <- map_dfc(.x = 1:1000, .f = ~tibble(sim = noise(predicted, 
                                           sd = sig)))
 colnames(sims) <- colnames(sims) |> 
@@ -234,7 +236,7 @@ After making sure all conditions of a linear model were met, we were able to reg
 
 
 
-# References
+## References
 
 “Babies per Woman (Total Fertility Rate).” Gapminder, www.gapminder.org/data/documentation/gd008/. Accessed 14 Mar. 2024. 
 
