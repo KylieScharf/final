@@ -232,3 +232,10 @@ From this plot, we can see that our simulated data have r-squared values of a li
 
 After making sure all conditions of a linear model were met, we were able to regress average life expectancy on average babies per woman to conclude that there is a negative linear relationship between the two variables between the years of 1900 and 2000. 
 
+
+
+# References
+
+“Babies per Woman (Total Fertility Rate).” Gapminder, www.gapminder.org/data/documentation/gd008/. Accessed 14 Mar. 2024. 
+
+“Life Expectancy at Birth.” Gapminder, www.gapminder.org/data/documentation/gd004/. Accessed 14 Mar. 2024. 
