@@ -1,6 +1,6 @@
 ---
 title: "STAT 331/531: Final Project"
-author: "Kylie Scharf, Emma Durler, Jordan Klapper, Mason Pudwill"
+authors: "Kylie Scharf, Emma Durler, Jordan Klapper, Mason Pudwill"
 format: 
   html:
     embed-resources: true
@@ -23,9 +23,9 @@ execute:
 
  Our research is aimed at investigating the potential relationship between fertility rates, measured by the average number of babies per woman, and average life expectancy measured in years across various countries worldwide. The explanatory variable of interest is the average number of babies per women per year and country measured in number of babies which we hope to explain the response variable that is the average life expectancy per year and country measured in years.
 
-  To answer our question, we decided to use data sourced from Gapminder to investigate a possible relationship. We used two data sets. One containing information of the average amount of babies per woman titled, in each country, a year titled *Babies per Woman (total fertility rate)*. Another, containing average life expectancy per country per year titled *Life Expectancy at Birth*. The Babies Per Woman data was collected differently for different time periods. For our data used from 1900-1950 the data is based on Gapminder Historic estimates documented and compiled by Mattias Lindgren. For data used from 1950-2000 Gapminder uses the estimates from the UN World Population Prospect. Due to the data being collected from different sources Gapminder smoothed the transition by altering years from 1930-1970 to be half Mattias Lindgren and half UN data. The Life Expectancy at birth data also is collected by different sources for different time periods. The 1900-1970 time period comes from Gapminder and is based on 100 sources compiled by Klara Johansson and Mattias Lindgren. The 1970-2000 data is from the IHME (Institute for Health Metrics and Evaluation, University of Washington).
+  To answer our question, we decided to use data sourced from Gapminder to investigate a possible relationship. We used two data sets. One containing information of the average amount of babies per woman in each country and year titled *Babies per Woman (total fertility rate)*. Another, containing average life expectancy per country per year titled *Life Expectancy at Birth*. The Babies Per Woman data was collected differently for different time periods. From 1900-1950, the data is based on Gapminder Historic estimates documented and compiled by Mattias Lindgren. For data used from 1950-2000, Gapminder uses the estimates from the UN World Population Prospect. Due to the data being collected from different sources, Gapminder smoothed the transition by altering years from 1930-1970 to be half Mattias Lindgren and half UN data. The Life Expectancy at birth data is also collected by different sources for different time periods. The 1900-1970 time period comes from Gapminder and is based on 100 sources compiled by Klara Johansson and Mattias Lindgren. The 1970-2000 data is from the IHME (Institute for Health Metrics and Evaluation, University of Washington).
   
-  To clean the data, we decided to first subset the two original large data sets imported to only contain observations from the years 1900 to 2000. We did this to limit the number of observations to be easier to work with and because we are only really interested in these years to base our conclusion on. We also decided to create a new variable called decade so that we may average over this in the future to reduce the amount of output. We then decided to use an inner join to join our data because we only wanted to include observations with an observed value within both data sets. Each observational unit (row in the data set) in our joined data represents one specific country in one specific year and contains the values of both variables. Along with a variable for country, our final cleaned data set also contains a variable for year, life expectancy, babies per woman, and decade. In total, our final data set contains 18,786 observations from 186 countries and from the years 1900 to 2000. In order to collect the data, GapMinder had different ways of collecting the data over time. For the Babies per woman data set, "1800 – 1950: We use the Gapminder Historic estimate which was compiled and documented by Mattias Lindgren, see previous versions in this link. 1950 – 2021: For most of the years, we use the estimates of the UN World Population Prospect 2022, for the Total Fertility Rate." For the Life Expectancy data, they used three separate sources and combined them into one. "We used the Global Burden of Disease Study 2017 which has data for 1990-2017, from IHME, the Institute for Health Metrics and Evaluation, University of Washington, Seattle, published in November 2018. Back to 1970, we use data from the Global Burden of Disease Study 2016 of the Institute for Health Metrics and Evaluation (IHME)  of the University of Washington, Seattle;  which has data for 1970-2016. (add citations) 
+  To clean the data, we decided to first subset the two original large data sets imported to only contain observations from the years 1900 to 2000. We did this to limit the number of observations to be easier to work with and because we are only really interested in these years to base our conclusion on. We also decided to create a new variable called decade so that we may average over this in the future to reduce the amount of output. We then decided to use an inner join to join our data because we only wanted to include observations with an observed value within both data sets. Each observational unit (row in the data set) in our joined data represents one specific country in one specific year and contains the values of both variables. Along with a variable for country, our final cleaned data set also contains a variable for year, life expectancy, babies per woman, and decade. In total, our final data set contains 18,786 observations from 186 countries and from the years 1900 to 2000. 
 
   We hypothesized as more babies are born in a country each year the average life expectancy for that country on that year will decrease. In simpler terms, we expect average life expectancy to decrease as the average amount of babies per woman increase. We believe this because as the average babies per woman increases, the population increases which creates more competition for limited resources. This will likely lead to earlier deaths, and an increased number of deaths not attributed to natural causes. Our motivation for selecting this topic stems from a blend of personal and societal interests.Most importantly, as individuals contemplating starting families, we're naturally curious about the potential impacts of fertility rates on life expectancy. Understanding these dynamics can inform our personal decisions and contribute to our collective understanding of family planning.
 
@@ -78,9 +78,9 @@ full <- inner_join(babies, life) |>
 
 # Linear Regression
 
-## Assumption Checks
+## Checking Assumptions
 
-  In order to test our hypothesized relationship, we fit a model to our data. The method we chose is a linear regression model. Before we could fit such a model, we needed to check that all assumptions of the model were met by our data. Below are graphs used to check some of the assumptions. 
+  In order to test our hypothesized relationship, we fit a model to our data. We chose a linear regression method for such model. Before we could fit such a model, we needed to check that all assumptions of the model were met by our data. Below are graphs used to check some of the assumptions. 
 
 ```{r}
 #assumption checking
@@ -94,21 +94,21 @@ tib <- augment(my_model)
 
 #hist of resids
 ggplot(data = tib, aes(x = .resid))+
-  geom_histogram(fill = "red", color = "black") +
+  geom_histogram(fill = "steelblue", color = "black") +
   labs(x = "Residuals", y = "", subtitle = "Count", title = "Summary of Residuals")
 
 #resid vs predicted
 
 ggplot(data = tib, aes(x = .fitted, y = .resid)) +
-  geom_point(color = "blue") +
+  geom_point() +
   labs(x = "Predicted Values", y = "", subtitle = "Residuals", title = "Residuals Vs. Predicted Values")
 ```
 
-A linear model is appropriate, firstly, because our data appears to follow a linear pattern. We can also assume our data are independent as knowing one person's life expectancy should not predict another person's. When plotting a histogram of the residuals obtained, we can also see that they are roughly normally distributed with a slight right skew. In a plot of residuals vs. predicted values, we can also see that we have roughly equal variability for each predicted value. There also does not appear to be any sort of pattern in the resiudals, further aiding our independent condition. Overall, from these graphs and previous knowledge about how our data was collected, we decided that a linear model is appropriate. 
+A linear model is appropriate, firstly, because our data appears to follow a linear pattern. We can also assume our data are independent as knowing one person's life expectancy should not predict another person's. When plotting a histogram of the residuals obtained, we can also see that they are roughly normally distributed with a slight right skew. In a plot of residuals vs. predicted values, we can also see that we have roughly equal variability for each predicted value. There also does not appear to be any sort of pattern in the residuals, further aiding our independent condition. Overall, from these graphs and previous knowledge about how our data was collected, we decided that a linear model is appropriate. 
 
 After checking that our data met all assumptions of a linear model, we first graphed the data in our combined data set to visualize the relationship between average life expectancy and average babies per woman. We averaged both average babies per woman and life expectancy for each country over all years in the data set. Each country is then only represented once in the plot. Each data point in the plot below represents one country where the average babies per woman in that country is plotted on the x-axis and the average life expectancy in that country is plotted on the y-axis. 
 
-## Linear Regression Model Plot
+## Visualization
 
 ```{r}
 #plot of response vs. explanatory
@@ -125,8 +125,6 @@ full |>
 As we can see in the graph above and the linear regression line plotted in such, there does appear to be a moderately strong and linear negative relationship between the two variables. Our hypothesis seems correct at the moment. There do not appear to be any points that do not fit the overall pattern. 
 
 We next wanted to analyze how the relationship between the variables changed over time. To do this, we used our decade variable that we created and grouped by not only country, but also decade. We then averaged both average babies per woman and average life expectancy over both country and decade to obtain the graph below. 
-
-## Model Subset By Decade
   
 ```{r}
 #plot over time
@@ -143,7 +141,7 @@ full |>
 
   As seen in this plot, it does not appear that the relationship between the variables is changing much over time. That is, the linear regression line plotted in blue does not seem to be changing in slope much throughout the different graphs. It does appear, however, that the average life expectancy is increasing over time, causing the graphs to shift upwards as decades increase. 
 
-## Regression Coefficients
+## Regression Coefficients and Variability
 
   We then wanted to test our hypothesized relationship by fitting a linear regression model to the data. Estimated coefficients of the fitted model, including slope and intercept, are shown in the table below. 
 
@@ -207,7 +205,7 @@ grid.arrange(ggplot(sim_data, aes(y = sim_avg_life_exp, x = avg_babies)) +
 
   As seen in the plot above, the simulated data appears to be relatively similar to the observed data. They seem to both have similar ranges and have very similar linear trends. The observed data appears to be more spread out than the simulated but not by much. This shows that a linear model appears to be a very good fit but not perfect. 
 
-## Iterating
+## Iteration
 
   To further assess our linear model choice, we created many many simulated average life expectancy data sets like the one above and regressed them on our observed average life expectancy data. This allowed us to assess the amount of variation in the observed average life expectancy data that is explained by the simulated average life expectancy data to determine if a linear model is actually appropriate. 
 
