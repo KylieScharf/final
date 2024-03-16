@@ -255,9 +255,7 @@ tibble(sims = sim_r_sq) |>
 
 # Conclusion
 
-  After making sure all conditions of a linear model were met, we were able to regress average life expectancy on average babies per woman to conclude that there is a negative linear relationship between the two variables between the years of 1900 and 2000. 
-
-
+After confirming the prerequisites for a linear model, we conducted a thorough regression analysis linking average life expectancy to average babies per woman from 1900 to 2000. Our findings revealed a consistent negative linear relationship between these variables over the century. This observation highlights the intricate connection between fertility rates and longevity, offering valuable insights into demographic shifts and their impact on societal well-being.
 
 # References
 
