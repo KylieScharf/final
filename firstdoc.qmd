@@ -27,7 +27,7 @@ execute:
   
   To clean the data, we decided to first subset the two original large data sets imported to only contain observations from the years 1900 to 2000. We did this to limit the number of observations to be easier to work with and because we are only really interested in these years to base our conclusion on. We also decided to create a new variable called decade so that we may average over this in the future to reduce the amount of output. We then decided to use an inner join to join our data because we only wanted to include observations with an observed value within both data sets. Each observational unit (row in the data set) in our joined data represents one specific country in one specific year and contains the values of both variables. Along with a variable for country, our final cleaned data set also contains a variable for year, life expectancy, babies per woman, and decade. In total, our final data set contains 18,786 observations from 186 countries and from the years 1900 to 2000. 
 
-  We hypothesized as more babies are born in a country each year the average life expectancy for that country on that year will decrease. In simpler terms, we expect average life expectancy to decrease as the average amount of babies per woman increase. We believe this because as the average babies per woman increases, the population increases which creates more competition for limited resources. This will likely lead to earlier deaths, and an increased number of deaths not attributed to natural causes. Our motivation for selecting this topic stems from a blend of personal and societal interests.Most importantly, as individuals contemplating starting families, we're naturally curious about the potential impacts of fertility rates on life expectancy. Understanding these dynamics can inform our personal decisions and contribute to our collective understanding of family planning.
+  We hypothesized as more babies are born in a country each year the average life expectancy for that country on that year will decrease. In simpler terms, we expect average life expectancy to decrease as the average amount of babies per woman increase. We believe this because as the average babies per woman increases, the population increases which creates more competition for limited resources. This will likely lead to earlier deaths, and an increased number of deaths not attributed to natural causes. Our motivation for selecting this topic stems from a blend of personal and societal interests. Most importantly, as individuals contemplating starting families, we're naturally curious about the potential impacts of fertility rates on life expectancy. Understanding these dynamics can inform our personal decisions and contribute to our collective understanding of family planning.
 
 
 ## Loading Libraries and Data
@@ -48,19 +48,24 @@ life <- read_csv(here::here("lex.csv"))
 ```{r}
 #| output: false
 #data cleaning
+
+#Subset babies per woman per country data to only include the years 1900-2000
 babies <- babies |>
   select(country, `1900`:`2000`) |>
   pivot_longer(`1900`:`2000`,
                names_to = "Year",
                values_to = "Babies_Per_Woman")
 
+#Subset life expectancy per country data to only include the years 1900-2000
 life <- life |>
   select(country, `1900`:`2000`) |>
   pivot_longer(`1900`:`2000`,
                names_to = "Year",
                values_to = "Life_Expectancy")
 
+#joining the two data sets to make a final analyzable data set
 full <- inner_join(babies, life) |>
+  #creation of new decade variable to reduce output
   mutate(decade = case_when(Year %in% c(1900:1910) ~ "00s",
                             Year %in% c(1910:1920) ~ "10s",
                             Year %in% c(1920:1930) ~ "20s",
@@ -148,7 +153,6 @@ full |>
 ```{r}
 #fitting a model
 broom::tidy(my_model)
-
 ```
 
   The model estimates an intercept of 73.199 years and a slope of -4.469 years, further supporting our hypothesized negative relationship between average babies per woman and average life expectancy. The estimated intercept represents that we estimate an average of average life expectancy of around 73 years in a country and year when, on average, a woman has 0 babies. The slope represents that for every increase of 1 baby in average babies per woman, we estimate an average decrease of around 4.5 years in average life expectancy. Our model can be written symbolically as (avg_life_exp)^ = 73.199 - 4.496(avg_babies) where (avg_life_exp)^ represents a prediction of the average life expectancy and (avg_babies) represents the average babies per woman in a particular year and country. 
